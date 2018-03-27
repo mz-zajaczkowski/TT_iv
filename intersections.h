@@ -62,6 +62,7 @@ int turnAngle(const angle& approachingAngle, const angle& leavingAngle)
       else
       {
           diff = (approachingAngle.value + 180 - leavingAngle.value);
+          returnAngle = 0;
       }
     }
     return returnAngle;
