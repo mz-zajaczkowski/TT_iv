@@ -37,21 +37,34 @@ struct angle
 
 int turnAngle(const angle& approachingAngle, const angle& leavingAngle)
 {
-    angle returnAngle;
+    int returnAngle = 0;
+    int diff = 0;
 
     // 90 to 180
     if (approachingAngle.half == leavingAngle.half)
+    {
         if (approachingAngle.value == leavingAngle.value)
             return 180;
         else
-            int diff = approachingAngle.value - leavingAngle.value;
+            diff = approachingAngle.value - leavingAngle.value;
             bool turnLeft = diff > 0;
-            if
+            if (diff == 90 || diff == -90)
+                return diff;
+            else
+                returnAngle = turnLeft ? 135 : -135;
+    }
     else
-      if (half && !other.half)
-          return (value - 180 - other.value) > 0;
+    {
+      if (approachingAngle.half && !leavingAngle.half)
+      {
+          diff = (approachingAngle.value - 180 - leavingAngle.value);
+      }
       else
-          return (value + 180 - other.value) > 0;
+      {
+          diff = (approachingAngle.value + 180 - leavingAngle.value);
+      }
+    }
+    return returnAngle;
 }
 
 // X, Y - angle (0-360)
