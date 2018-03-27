@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include "intersections.h"
 using namespace std;
 
 struct InstalledPackage
@@ -86,6 +87,8 @@ int main()
     string S {"Netherlands,1,25000\nNetherlands,2,3000\nNetherlands,3,1000\nBelgium,4,50000"};
     string T {"Netherlands,1\nBelgium,2"};
     string U {"Belgium"};
-    cout << solution(S, T, U) << endl;
+//    cout << solution(S, T, U) << endl;
+
+    intersection_solution(270, 5);
     return 0;
 }
