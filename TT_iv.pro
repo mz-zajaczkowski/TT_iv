@@ -6,4 +6,5 @@ CONFIG -= qt
 SOURCES += main.cpp
 
 HEADERS += \
-    intersections.h
+    intersections.h \
+    lanes.h

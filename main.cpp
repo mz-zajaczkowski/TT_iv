@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include "intersections.h"
+#include "lanes.h"
 using namespace std;
 
 struct InstalledPackage
@@ -89,6 +90,8 @@ int main()
     string U {"Belgium"};
 //    cout << solution(S, T, U) << endl;
 
-    intersection_solution(270, 5);
+//    intersection_solution(270, 5);
+    vector<int> A {7, 11, 10, 4};
+    lanes_solution(A);
     return 0;
 }
