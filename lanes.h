@@ -17,6 +17,7 @@ int lanes_solution(vector<int>& A)
     typedef std::pair<path, unsigned int> pathCost;
     if (!A.empty())
     {
+
         bool naive = false;
         for (auto aElem : A)
         {
