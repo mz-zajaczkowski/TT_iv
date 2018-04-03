@@ -91,7 +91,17 @@ int main()
 //    cout << solution(S, T, U) << endl;
 
 //    intersection_solution(270, 5);
+    vector<int> emptyVec;
+    cout << "empty vec: " << lanes_solution(emptyVec) << endl;
     vector<int> A {7, 11, 10, 4};
-    lanes_solution(A);
+    cout << "vec A: " << lanes_solution(A) << endl;
+    vector<int> B {9, 11, 10, 8};
+    cout << "vec B: " << lanes_solution(B) << endl;
+//    for (int i = 0; i < std::pow(2, 8); ++i)
+//    {
+//        std::cout << i << ". : " << std::bitset<(sizeof(int) * 8)>(i) << "\n";
+//        char charVal = static_cast<char>(i);
+//        cout << "char value: " << std::bitset<8>(charVal) << endl;
+//    }
     return 0;
 }
