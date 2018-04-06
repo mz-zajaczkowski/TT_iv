@@ -5,84 +5,10 @@
 #include <vector>
 #include <iostream>
 #include <iterator>
+#include <cstring>
+#include <climits>
 
 using bitset8 = std::bitset<8>;
-struct vertex
-{
-    int row;
-    int col;
-    vertex(int _r, int _c)
-        : row(_r)
-        , col(_c)
-    {}
-    vertex()
-    {
-        row = 0;
-        col = 0;
-    }
-
-    bool operator ==(const vertex &other)
-    {
-        if (this == &other
-                || (row == other.row
-                    && col == other.col))
-            return true;
-        return false;
-    }
-
-    bool operator !=(const vertex &other)
-    {
-        return !(this == &other);
-    }
-};
-struct edge
-{
-    vertex from;
-    vertex to;
-    int weight;
-    edge(vertex _f, vertex _t, int _w)
-        : from(_f)
-        , to(_t)
-        , weight(_w)
-    {}
-};
-
-struct graph
-{
-    void addVertice(vertex v)
-    {
-        if (!vertices.empty())
-        {
-            for (vertex vv : vertices)
-            {
-                if (vv == v)
-                    return;
-            }
-        }
-
-        vertices.push_back(v);
-    }
-
-    bool addEdge(edge edge)
-    {
-        bool vFound = false, uFound = false;
-        for(vertex vv : vertices)
-        {
-            if(edge.from == vv)
-                vFound = true;
-            if(edge.to == vv)
-                uFound = true;
-        }
-
-        return vFound && uFound;
-    }
-    graph() {}
-
-private:
-    std::vector<vertex> vertices;
-    //                            weight
-    std::vector<edge> edges;
-};
 
 struct segment
 {
@@ -103,86 +29,73 @@ struct segment
         return seg[index];
     }
 };
-std::vector<vertex> addAdjacents(graph &G, std::vector<segment>::iterator segListIt, int segmentCount, vertex source, char bit)
+
+int getShortestPathLen(std::vector<segment>::iterator segListIt, std::vector<segment>::iterator endIt, size_t numSegments)
 {
-    segment currentSeg = *segListIt;
-    char leftBit = bit + 1;
-    char rightBit = bit - 1;
-    vertex adj, leftAdj, rightAdj;
-    std::vector<vertex> adjacents;
-
-    if (0 == bit && (*segListIt)[leftBit])
+    int minCost = 100000;
+    int costMatrix[numSegments][8];
+    for (int i = 0; i < numSegments; ++i)
     {
-       leftAdj = {segmentCount, leftBit};
-       G.addVertice(leftAdj);
-       G.addEdge(edge(source, leftAdj, 1));
-       adjacents.push_back(leftAdj);
+        for(int j = 0; j < 8; ++j)
+            costMatrix[i][j] = 100000;
     }
-    else if(7 == bit && currentSeg[rightBit])
-    {
-        rightAdj = {segmentCount, rightBit};
-        G.addVertice(rightAdj);
-        G.addEdge(edge(source, rightAdj, 1));
-        adjacents.push_back(rightAdj);
-    }
-
-    if(currentSeg[bit])
-    {
-        adj = {segmentCount, bit};
-        G.addVertice(adj);
-        G.addEdge(edge(source, adj, 0));
-        adjacents.push_back(adj);
-    }
-    return adjacents;
-}
-
-graph constructGraph(std::vector<segment> segmentList, char bit)
-{
-    graph G;
-    auto segListIt = segmentList.begin();
     int segmentCount = 0;
-    if((*segListIt)[bit])
-    {
-        vertex source(0, bit);
-        G.addVertice(source);
-        ++segListIt;
-        ++segmentCount;
-        std::vector<vertex> adjacents = addAdjacents(G, segListIt, segmentCount, source, bit);
 
-        while (segListIt != segmentList.end() && !adjacents.empty())
+    for (int bit = 0; bit < 8; ++bit)
+    {
+        if((*segListIt)[bit])
         {
-            ++segListIt;
-            ++segmentCount;
-            std::vector<vertex> newAdjacents;
-            for (vertex adj : adjacents)
+
+            std::vector<int> adjacents;
+            adjacents.push_back(bit);
+            costMatrix[0][bit] = 0;
+            while (segListIt != endIt && !adjacents.empty())
             {
-                std::vector<vertex> tmpAdjacents = addAdjacents(G, segListIt, segmentCount, adj, bit);
-                newAdjacents.insert(newAdjacents.end(), tmpAdjacents.begin(), tmpAdjacents.end());
+                ++segListIt;
+                ++segmentCount;
+                std::vector<int> newAdjacents;
+                for (int adj : adjacents)
+                {
+                    int leftBit = adj + 1;
+                    int rightBit = adj - 1;
+                    int sourceCost = costMatrix[segmentCount - 1][bit];
+
+                    if (0 == bit && (*segListIt)[leftBit])
+                    {
+                       (costMatrix[segmentCount])[leftBit] = (sourceCost + 1) <= (costMatrix[segmentCount])[leftBit] ? (sourceCost + 1) : (costMatrix[segmentCount])[leftBit] + 1;
+                       newAdjacents.push_back(leftBit);
+                    }
+                    else if(7 == bit && (*segListIt)[rightBit])
+                    {
+                        (costMatrix[segmentCount])[rightBit] = (sourceCost + 1) <= (costMatrix[segmentCount])[rightBit] ? (sourceCost + 1) : (costMatrix[segmentCount])[rightBit] + 1;
+                        newAdjacents.push_back(rightBit);
+                    }
+
+                    if((*segListIt)[bit])
+                    {
+                        (costMatrix[segmentCount])[adj] = sourceCost < (costMatrix[segmentCount])[adj] ? (sourceCost) : (costMatrix[segmentCount])[adj];
+                        newAdjacents.push_back(adj);
+                    }
+                }
+                adjacents.clear();
+                adjacents = newAdjacents;
             }
-            adjacents.clear();
-            adjacents = newAdjacents;
         }
     }
+    for(int j = 0; j < 8; ++j)
+        minCost = std::min((costMatrix[segmentCount])[j], minCost);
+    return minCost;
 }
 
 int lanes_solution(vector<int>& A)
 {
-    std::vector<segment> segmentList;
-    std::vector<graph> graphList;
-    for (int aSeg : A)
-        segmentList.push_back(segment(aSeg));
-    for (int bit = 0; bit < 8; ++bit)
+    if(!A.empty())
     {
-        int segCount = 0;
-        for(segment seg : segmentList)
-        {
-            if(seg[bit] > 0)
-            {
-                graph G;
-                G.addVertice(vertex(segCount, bit));
-            }
-            ++segCount;
-        }
+        std::vector<segment> segmentList;
+        for (int aSeg : A)
+            segmentList.push_back(segment(aSeg));
+
+        return getShortestPathLen(segmentList.begin(), segmentList.end(), segmentList.size());
     }
     return -1;
 }
