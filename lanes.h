@@ -19,9 +19,9 @@ struct segment
         {
             seg.push_back(static_cast<char>(_val) & (1 << i));
         }
-        for (auto elem: seg)
-            std::cout << std::bitset<8>(elem) << std::endl;
-        std::cout << "============" << std::endl;
+//        for (auto elem: seg)
+//            std::cout << std::bitset<8>(elem) << std::endl;
+//        std::cout << "============" << std::endl;
     }
 
     const char& operator [](char index)
@@ -30,10 +30,13 @@ struct segment
     }
 };
 
-int getShortestPathLen(std::vector<segment>::iterator segListIt, std::vector<segment>::iterator endIt, size_t numSegments)
+int getShortestPathLen(std::vector<segment> segmentList)
 {
     int minCost = 100000;
+    int numSegments = segmentList.size();
     int costMatrix[numSegments][8];
+    std::vector<segment>::iterator segListIt = segmentList.begin();
+    std::vector<segment>::iterator endIt = segmentList.end();
     for (int i = 0; i < numSegments; ++i)
     {
         for(int j = 0; j < 8; ++j)
@@ -43,13 +46,15 @@ int getShortestPathLen(std::vector<segment>::iterator segListIt, std::vector<seg
 
     for (int bit = 0; bit < 8; ++bit)
     {
+        segListIt = segmentList.begin();
+        segmentCount = 0;
         if((*segListIt)[bit])
         {
 
             std::vector<int> adjacents;
             adjacents.push_back(bit);
             costMatrix[0][bit] = 0;
-            while (segListIt != endIt && !adjacents.empty())
+            while ((segListIt != (endIt - 1)) && !adjacents.empty())
             {
                 ++segListIt;
                 ++segmentCount;
@@ -58,24 +63,41 @@ int getShortestPathLen(std::vector<segment>::iterator segListIt, std::vector<seg
                 {
                     int leftBit = adj + 1;
                     int rightBit = adj - 1;
-                    int sourceCost = costMatrix[segmentCount - 1][bit];
+                    int sourceCost = costMatrix[segmentCount - 1][adj];
 
-                    if (0 == bit && (*segListIt)[leftBit])
+                    if (0 == adj && (*segListIt)[leftBit])
                     {
-                       (costMatrix[segmentCount])[leftBit] = (sourceCost + 1) <= (costMatrix[segmentCount])[leftBit] ? (sourceCost + 1) : (costMatrix[segmentCount])[leftBit] + 1;
-                       newAdjacents.push_back(leftBit);
+                        if ((sourceCost + 1) < (costMatrix[segmentCount])[leftBit])
+                            (costMatrix[segmentCount])[leftBit] = sourceCost + 1;
+                        newAdjacents.push_back(leftBit);
                     }
-                    else if(7 == bit && (*segListIt)[rightBit])
+                    else if(7 == adj && (*segListIt)[rightBit])
                     {
-                        (costMatrix[segmentCount])[rightBit] = (sourceCost + 1) <= (costMatrix[segmentCount])[rightBit] ? (sourceCost + 1) : (costMatrix[segmentCount])[rightBit] + 1;
+                        if ((sourceCost + 1) < (costMatrix[segmentCount])[rightBit])
+                            (costMatrix[segmentCount])[rightBit] = sourceCost + 1;
                         newAdjacents.push_back(rightBit);
                     }
-
-                    if((*segListIt)[bit])
+                    else
+                    {
+                        if((*segListIt)[rightBit])
+                        {
+                            if ((sourceCost + 1) < (costMatrix[segmentCount])[rightBit])
+                                (costMatrix[segmentCount])[rightBit] = sourceCost + 1;
+                            newAdjacents.push_back(rightBit);
+                        }
+                        if((*segListIt)[leftBit])
+                        {
+                            if ((sourceCost + 1) < (costMatrix[segmentCount])[leftBit])
+                                (costMatrix[segmentCount])[leftBit] = sourceCost + 1;
+                            newAdjacents.push_back(leftBit);
+                        }
+                    }
+                    if((*segListIt)[adj])
                     {
                         (costMatrix[segmentCount])[adj] = sourceCost < (costMatrix[segmentCount])[adj] ? (sourceCost) : (costMatrix[segmentCount])[adj];
                         newAdjacents.push_back(adj);
                     }
+
                 }
                 adjacents.clear();
                 adjacents = newAdjacents;
@@ -83,7 +105,7 @@ int getShortestPathLen(std::vector<segment>::iterator segListIt, std::vector<seg
         }
     }
     for(int j = 0; j < 8; ++j)
-        minCost = std::min((costMatrix[segmentCount])[j], minCost);
+        minCost = std::min((costMatrix[numSegments - 1])[j], minCost);
     return minCost;
 }
 
@@ -93,9 +115,12 @@ int lanes_solution(vector<int>& A)
     {
         std::vector<segment> segmentList;
         for (int aSeg : A)
+        {
+            std::cout << bitset8(aSeg) << "\n";
             segmentList.push_back(segment(aSeg));
+        }
 
-        return getShortestPathLen(segmentList.begin(), segmentList.end(), segmentList.size());
+        return getShortestPathLen(segmentList);
     }
     return -1;
 }

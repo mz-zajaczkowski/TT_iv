@@ -2,6 +2,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <cassert>
 #include "intersections.h"
 #include "lanes.h"
 using namespace std;
@@ -27,14 +28,14 @@ typedef vector<CatalogEntry> Catalog;
 typedef vector<InstalledPackage> PackageList;
 int solution(string& S, string& T, string& U)
 {
-    stringstream sCat {S};
-    stringstream sPackages {T};
-    string region {U};
+    stringstream ssCat {S};
+    stringstream ssPackages {T};
+    string sRegion {U};
     string sCatEntry;
     Catalog catalog;
     PackageList packageList;
     uint32_t upgradeSize = 0;
-    while(std::getline(sCat, sCatEntry))
+    while(std::getline(ssCat, sCatEntry))
     {
         CatalogEntry entry;
         std::replace(sCatEntry.begin(), sCatEntry.end(), ',', ' ');
@@ -49,11 +50,11 @@ int solution(string& S, string& T, string& U)
         entry.size = stoul(tmp);
         cout << entry;
         //make sure it's the same region
-        if (0 == region.compare(entry.region))
+        if (0 == sRegion.compare(entry.region))
             catalog.push_back(entry);
     }
     string sPack;
-    while(std::getline(sPackages, sPack))
+    while(std::getline(ssPackages, sPack))
     {
         std::replace(sPack.begin(), sPack.end(), ',', ' ');
         InstalledPackage package;
@@ -63,7 +64,7 @@ int solution(string& S, string& T, string& U)
         packStream >> tmpVer;
         package.version = stoul(tmpVer);
         //save only if in the same region
-        if (0 == region.compare(package.region))
+        if (0 == sRegion.compare(package.region))
             packageList.push_back(package);
     }
     if (catalog.empty() || packageList.empty())
@@ -85,18 +86,29 @@ int solution(string& S, string& T, string& U)
 
 int main()
 {
-    string S {"Netherlands,1,25000\nNetherlands,2,3000\nNetherlands,3,1000\nBelgium,4,50000"};
+    string S {"Netherlands,1,25000"};
     string T {"Netherlands,1\nBelgium,2"};
-    string U {"Belgium"};
+    string U {"Netherlands"};
 //    cout << solution(S, T, U) << endl;
 
-//    intersection_solution(270, 5);
-    vector<int> emptyVec;
-    cout << "empty vec: " << lanes_solution(emptyVec) << endl;
-    vector<int> A {7, 11, 10, 4};
-    cout << "vec A: " << lanes_solution(A) << endl;
-    vector<int> B {9, 11, 10, 8};
-    cout << "vec B: " << lanes_solution(B) << endl;
+    cout << "(270, 29): " << intersection_solution(270, 29) << endl;
+    assert(intersection_solution(270, 29) == -90);
+    cout << "(290, 270): " << intersection_solution(290, 270) << endl;
+    assert(intersection_solution(290, 270) == 180);
+    cout << "(270, 135): " << intersection_solution(270, 135) << endl;
+    assert(intersection_solution(270, 135) == 30);
+    cout << "(135, 350): " << intersection_solution(135, 350) << endl;
+    assert(intersection_solution(135, 350) == 30);
+    cout << "(170, 120): " << intersection_solution(170, 120) << endl;
+    assert(intersection_solution(170, 120) == 135);
+    cout << "(5, 200): " << intersection_solution(5, 200) << endl;
+    assert(intersection_solution(5,200) == 0);
+//    vector<int> emptyVec;
+//    cout << "empty vec: " << lanes_solution(emptyVec) << endl;
+//    vector<int> A {7, 11, 10, 4};
+//    cout << "vec A: " << lanes_solution(A) << endl;
+//    vector<int> B {9, 11, 10, 8};
+//    cout << "vec B: " << lanes_solution(B) << endl;
 //    for (int i = 0; i < std::pow(2, 8); ++i)
 //    {
 //        std::cout << i << ". : " << std::bitset<(sizeof(int) * 8)>(i) << "\n";
