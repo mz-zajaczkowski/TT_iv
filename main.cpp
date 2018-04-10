@@ -84,6 +84,12 @@ int solution(string& S, string& T, string& U)
     return upgradeSize;
 }
 
+void check_intersections(int X, int Y, int expectedResult)
+{
+    cout << "(" << X << ", " << Y << "): " << intersection_solution(X, Y) << endl;
+    assert(intersection_solution(X, Y) == expectedResult);
+}
+
 int main()
 {
     string S {"Netherlands,1,25000"};
@@ -91,18 +97,16 @@ int main()
     string U {"Netherlands"};
 //    cout << solution(S, T, U) << endl;
 
-    cout << "(270, 29): " << intersection_solution(270, 29) << endl;
-    assert(intersection_solution(270, 29) == -90);
-    cout << "(290, 270): " << intersection_solution(290, 270) << endl;
-    assert(intersection_solution(290, 270) == 180);
-    cout << "(270, 135): " << intersection_solution(270, 135) << endl;
-    assert(intersection_solution(270, 135) == 30);
-    cout << "(135, 350): " << intersection_solution(135, 350) << endl;
-    assert(intersection_solution(135, 350) == 30);
-    cout << "(170, 120): " << intersection_solution(170, 120) << endl;
-    assert(intersection_solution(170, 120) == 135);
-    cout << "(5, 200): " << intersection_solution(5, 200) << endl;
-    assert(intersection_solution(5,200) == 0);
+    check_intersections(270, 29, -90);
+    check_intersections(29, 270, 90);
+    check_intersections(290, 270, 180);
+    check_intersections(270, 290, 180);
+    check_intersections(270, 135, 30);
+    check_intersections(135, 270, -30);
+    check_intersections(170, 120, 135);
+    check_intersections(120, 170, -135);
+    check_intersections(5, 200, 0);
+    check_intersections(200, 5, 0);
 //    vector<int> emptyVec;
 //    cout << "empty vec: " << lanes_solution(emptyVec) << endl;
 //    vector<int> A {7, 11, 10, 4};
