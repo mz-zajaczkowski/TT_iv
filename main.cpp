@@ -90,6 +90,15 @@ void check_intersections(int X, int Y, int expectedResult)
     assert(intersection_solution(X, Y) == expectedResult);
 }
 
+void check_lanes(vector<int> A, int expectedResult)
+{
+    cout << "A: [ ";
+    std::copy(A.begin(), A.end(), std::ostream_iterator<int>(std::cout, " "));
+    std::cout << " ]" << endl;
+    std::cout << "Expected result: " << expectedResult << endl;
+    assert(lanes_solution(A) == expectedResult);
+}
+
 int main()
 {
     string S {"Netherlands,1,25000"};
@@ -107,17 +116,13 @@ int main()
     check_intersections(120, 170, -135);
     check_intersections(5, 200, 0);
     check_intersections(200, 5, 0);
-//    vector<int> emptyVec;
-//    cout << "empty vec: " << lanes_solution(emptyVec) << endl;
-//    vector<int> A {7, 11, 10, 4};
-//    cout << "vec A: " << lanes_solution(A) << endl;
-//    vector<int> B {9, 11, 10, 8};
-//    cout << "vec B: " << lanes_solution(B) << endl;
-//    for (int i = 0; i < std::pow(2, 8); ++i)
-//    {
-//        std::cout << i << ". : " << std::bitset<(sizeof(int) * 8)>(i) << "\n";
-//        char charVal = static_cast<char>(i);
-//        cout << "char value: " << std::bitset<8>(charVal) << endl;
-//    }
+
+
+    vector<int> emptyVec;
+    check_lanes(emptyVec, -1);
+    vector<int> A {7, 11, 10, 4};
+    check_lanes(A, 1);
+    vector<int> B {9, 11, 10, 8};
+    check_lanes(B, 0);
     return 0;
 }
